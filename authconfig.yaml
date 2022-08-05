@@ -1,0 +1,25 @@
+apiVersion: authorino.kuadrant.io/v1beta1
+kind: AuthConfig
+metadata:
+  name: talker-api
+spec:
+  hosts:
+  - talker-api.apps.dev-eng-ocp4.dev.3sca.net
+  - talker-api.talker-api.svc.cluster
+  identity:
+  - name: openshift-users
+    kubernetes:
+      audiences: ["https://kubernetes.default.svc"]
+  authorization:
+  - name: check-openshift-group
+    json:
+      rules:
+      - selector: auth.identity.groups
+        operator: incl
+        value: talker-api
+  response:
+  - name: x-auth-data
+    json:
+      properties:
+      - name: username
+        valueFrom: { authJSON: auth.identity.username }
